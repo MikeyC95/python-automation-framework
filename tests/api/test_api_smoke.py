@@ -1,7 +1,8 @@
-from src.api.client import ApiClient
+import pytest
 
-def test_jsonplaceholder_posts_smoke():
-    api = ApiClient("https://jsonplaceholder.typicode.com")
+pytestmark = [pytest.mark.api, pytest.mark.smoke]
+
+def test_jsonplaceholder_posts_smoke(api):
     r = api.get("/posts/1")
     assert r.status_code == 200
     body = r.json()
