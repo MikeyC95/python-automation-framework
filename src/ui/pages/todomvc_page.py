@@ -18,3 +18,12 @@ class TodoMVCPage:
     def assert_item_visible(self, text: str) -> "TodoMVCPage":
         expect(self.page.get_by_test_id("todo-title")).to_contain_text(text)
         return self
+    
+    def toggle_first_item(self) -> "TodoMVCPage":
+        self.page.locator(".todo-list li input.toggle").first.click()
+        return self
+
+
+    def assert_first_item_completed(self) -> "TodoMVCPage":
+        expect(self.page.locator(".todo-list li").first).to_have_class("completed")
+        return self
