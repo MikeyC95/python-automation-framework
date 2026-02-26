@@ -13,6 +13,17 @@ A lightweight API and UI automation framework built with:
 - Environment-based configuration
 - CI-ready structure
 
+## Quick start
+
+### 1) Install
+```bash
+python -m venv .venv
+source .venv/bin/activate   # mac/linux
+# .venv\Scripts\activate    # windows (powershell)
+
+pip install -r requirements.txt
+python -m playwright install
+
 ## Roadmap
 - [ ] Auth handling
 - [ ] Reporting integration

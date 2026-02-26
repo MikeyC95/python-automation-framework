@@ -20,16 +20,32 @@ def page(request):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=HEADLESS)
         context = browser.new_context()
-        page = context.new_page()
 
+        # Start Playwright tracing for this test
+        context.tracing.start(screenshots=True, snapshots=True, sources=True)
+
+        page = context.new_page()
         yield page
 
-        # After test runs, check if it failed
-        if request.node.rep_call.failed:
+        failed = getattr(request.node, "rep_call", None) and request.node.rep_call.failed
+
+        if failed:
             os.makedirs("artifacts", exist_ok=True)
-            screenshot_path = f"artifacts/{request.node.name}.png"
-            page.screenshot(path=screenshot_path)
-            print(f"\n📸 Screenshot saved to {screenshot_path}")
+
+            # Screenshot (safe)
+            try:
+                screenshot_path = f"artifacts/{request.node.name}.png"
+                page.screenshot(path=screenshot_path)
+                print(f"\n📸 Screenshot saved to {screenshot_path}")
+            except Exception as e:
+                print(f"Screenshot failed: {e}")
+
+            # Trace zip (super useful for debugging)
+            trace_path = f"artifacts/{request.node.name}-trace.zip"
+            context.tracing.stop(path=trace_path)
+            print(f"\n🧵 Trace saved to {trace_path}")
+        else:
+            context.tracing.stop()
 
         context.close()
         browser.close()
